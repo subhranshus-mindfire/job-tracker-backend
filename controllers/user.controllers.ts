@@ -3,6 +3,7 @@ import User from '../models/User';
 
 export const createUser = async (req: Request, res: Response): Promise<void> => {
   try {
+
     const user = await User.create(req?.body);
     res.status(201).json({ success: true, data: user });
   } catch (err: any) {

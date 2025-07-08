@@ -1,14 +1,14 @@
 import mongoose, { Schema, Document, Types } from 'mongoose';
 
 export interface IEmployer extends Document {
-  user_id: Types.ObjectId;
+  user: Types.ObjectId;
   createdAt: Date;
   updatedAt: Date;
 }
 
 const employerSchema = new Schema<IEmployer>(
   {
-    user_id: {
+    user: {
       type: Schema.Types.ObjectId,
       ref: 'User',
       required: true,
