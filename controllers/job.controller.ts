@@ -1,8 +1,14 @@
 import { Request, Response } from 'express';
 import { Job } from '../models/Job';
+import { Employer } from '../models/Employer';
 
 export const createJob = async (req: Request, res: Response): Promise<void> => {
   try {
+    const employer = await Employer.find({ _id: req?.body?.employer })
+    console.log(employer)
+    if (!(employer)) {
+      res.status(400).json({ success: false, message: "employer not found" });
+    }
     const job = await Job.create(req.body);
     res.status(201).json({ success: true, data: job });
   } catch (err: any) {
