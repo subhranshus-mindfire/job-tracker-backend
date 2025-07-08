@@ -6,8 +6,9 @@ export const createJob = async (req: Request, res: Response): Promise<void> => {
   try {
     const employer = await Employer.find({ _id: req?.body?.employer })
     console.log(employer)
-    if (!(employer)) {
+    if ((employer.length == 0)) {
       res.status(400).json({ success: false, message: "employer not found" });
+      return
     }
     const job = await Job.create(req.body);
     res.status(201).json({ success: true, data: job });
