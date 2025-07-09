@@ -6,14 +6,14 @@ import {
   updateEmployer,
   deleteEmployer
 } from '../controllers/employer.controller';
-import { protect } from '../middlewares/auth.middleware';
+import { authorize, protect } from '../middlewares/auth.middleware';
 
 const router = Router()
 
 router.post('/', createEmployer);
-router.get('/', protect, getEmployers);
+router.get('/', protect, authorize("admin"), getEmployers);
 router.get('/:id', getEmployer);
-router.put('/:id', protect, updateEmployer);
-router.delete('/:id', protect, deleteEmployer);
+router.put('/:id', protect, authorize("employer"), updateEmployer);
+router.delete('/:id', protect, authorize("employer"), deleteEmployer);
 
 export default router

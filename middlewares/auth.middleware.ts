@@ -35,7 +35,8 @@ export const authorize =
     (req: Request, res: Response, next: NextFunction) => {
       // @ts-ignore
       if (!role === req.user.role) {
-        return res.status(403).json({ success: false, message: 'Access denied' });
+        res.status(403).json({ success: false, message: 'Access denied' });
+        return
       }
       next();
     };
