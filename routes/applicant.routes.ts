@@ -1,13 +1,14 @@
 import { Router } from "express";
 import { createApplicant, deleteApplicant, getApplicant, getApplicants, updateApplicant } from "../controllers/applicant.controller";
+import { protect } from "../middlewares/auth.middleware";
 
 const router = Router();
 
-router.get("/", getApplicants)
+router.get("/", protect, getApplicants)
 router.post("/", createApplicant)
-router.get("/:id", getApplicant)
-router.put("/:id", updateApplicant)
-router.delete("/:id", deleteApplicant)
+router.get("/:id", protect, getApplicant)
+router.put("/:id", protect, updateApplicant)
+router.delete("/:id", protect, deleteApplicant)
 
 
 
