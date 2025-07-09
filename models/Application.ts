@@ -23,7 +23,7 @@ const applicationSchema = new Schema<IApplication>(
     },
     status: {
       type: String,
-      enum: ['applied', 'reviewing', 'accepted', 'rejected'],
+      enum: ['applied', 'interviewing', 'hired', 'rejected'],
       default: 'applied'
     },
     applied_at: {

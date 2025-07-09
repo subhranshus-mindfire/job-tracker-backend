@@ -4,6 +4,7 @@ import userRoutes from './routes/user.routes';
 import applicantRoutes from './routes/applicant.routes';
 import employerRoutes from './routes/employer.routes';
 import jobRoutes from './routes/job.routes';
+import applicationRoutes from './routes/application.routes'
 
 
 
@@ -16,6 +17,7 @@ app.use('/api/users', userRoutes);
 app.use('/api/applicants', applicantRoutes);
 app.use('/api/employers', employerRoutes);
 app.use('/api/jobs', jobRoutes);
+app.use("/api/applications", applicationRoutes)
 
 
 
