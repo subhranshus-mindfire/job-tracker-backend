@@ -30,16 +30,38 @@ export const protect = async (req: Request, res: Response, next: NextFunction) =
   }
 };
 
-export const authorize =
-  (role: string) =>
-    (req: Request, res: Response, next: NextFunction) => {
-      // @ts-ignore
-      if ((role === req.user.role) || (req.user.role == "admin")) {
-        next();
-      }
-      res.status(403).json({ success: false, message: 'Access denied' });
-      return
-    };
+export const authorize = (role: string) => (req: Request, res: Response, next: NextFunction) => {
+  // @ts-ignore
+  if ((role === req.user.role) || (req.user.role == "admin")) {
+    next();
+  }
+  res.status(403).json({ success: false, message: 'Access denied' });
+  return
+};
+
+export const verifySelf = (req: Request, res: Response, next: NextFunction) => {
+
+  // @ts-ignore
+
+  if (req.user.role == "admin") {
+    next()
+  }
+  // @ts-ignore
+  const userIdFromToken = req.user?.id;
+  const userIdFromParams = req.params.id;
+
+  if (!userIdFromToken) {
+    res.status(401).json({ success: false, message: 'Unauthorized' });
+    return
+  }
+
+  if (userIdFromToken !== userIdFromParams) {
+    res.status(403).json({ success: false, message: 'You can only access your own resource' });
+    return
+  }
+
+  next();
+};
 
 
 

@@ -6,7 +6,7 @@ import {
   updateEmployer,
   deleteEmployer
 } from '../controllers/employer.controller';
-import { authorize, protect } from '../middlewares/auth.middleware';
+import { authorize, protect, verifySelf } from '../middlewares/auth.middleware';
 
 const router = Router()
 
@@ -120,7 +120,7 @@ router.get('/:id', getEmployer);
  *       404:
  *         description: Not found
  */
-router.put('/:id', protect, authorize('employer'), updateEmployer);
+router.put('/:id', protect, authorize('employer'), verifySelf, updateEmployer);
 
 /**
  * @swagger
@@ -147,6 +147,6 @@ router.put('/:id', protect, authorize('employer'), updateEmployer);
  *       404:
  *         description: Not found
  */
-router.delete('/:id', protect, authorize('employer'), deleteEmployer);
+router.delete('/:id', protect, authorize('employer'), verifySelf, deleteEmployer);
 
 export default router

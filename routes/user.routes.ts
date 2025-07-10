@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { createUser, deleteUser, getUser, getUsers, updateUser } from '../controllers/user.controllers';
-import { authorize, protect } from '../middlewares/auth.middleware';
+import { authorize, protect, verifySelf } from '../middlewares/auth.middleware';
 
 const router = Router();
 
@@ -86,7 +86,7 @@ router.get('/', protect, authorize('admin'), getUsers);
  *       404:
  *         description: User not found
  */
-router.get('/:id', getUser);
+router.get('/:id', protect, getUser);
 
 /**
  * @swagger
@@ -127,7 +127,7 @@ router.get('/:id', getUser);
  *       404:
  *         description: Not found
  */
-router.put('/:id', protect, updateUser);
+router.put('/:id', protect, verifySelf, updateUser);
 
 /**
  * @swagger
@@ -154,7 +154,7 @@ router.put('/:id', protect, updateUser);
  *       404:
  *         description: Not found
  */
-router.delete('/:id', protect, deleteUser);
+router.delete('/:id', protect, verifySelf, deleteUser);
 
 
 export default router;

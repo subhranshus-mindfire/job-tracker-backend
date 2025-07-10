@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { createApplicant, deleteApplicant, getApplicant, getApplicants, updateApplicant } from "../controllers/applicant.controller";
-import { authorize, protect } from "../middlewares/auth.middleware";
+import { authorize, protect, verifySelf } from "../middlewares/auth.middleware";
 
 const router = Router();
 
@@ -84,7 +84,7 @@ router.post("/", createApplicant);
  *       404:
  *         description: Applicant not found
  */
-router.get("/:id", protect, authorize("employer"), getApplicant);
+router.get("/:id", protect, authorize("employer"), verifySelf, getApplicant);
 
 /**
  * @swagger
@@ -123,7 +123,7 @@ router.get("/:id", protect, authorize("employer"), getApplicant);
  *       404:
  *         description: Applicant not found
  */
-router.put("/:id", protect, authorize("applicant"), updateApplicant);
+router.put("/:id", protect, authorize("applicant"), verifySelf, updateApplicant);
 
 /**
  * @swagger
@@ -150,6 +150,6 @@ router.put("/:id", protect, authorize("applicant"), updateApplicant);
  *       404:
  *         description: Applicant not found
  */
-router.delete("/:id", protect, authorize("applicant"), deleteApplicant);
+router.delete("/:id", protect, authorize("applicant"), verifySelf, deleteApplicant);
 
 export default router
