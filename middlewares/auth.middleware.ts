@@ -30,14 +30,14 @@ export const protect = async (req: Request, res: Response, next: NextFunction) =
   }
 };
 
-export const authorize =
-  (role: string) =>
-    (req: Request, res: Response, next: NextFunction) => {
-      // @ts-ignore
-      if (!role === req.user.role) {
-        res.status(403).json({ success: false, message: 'Access denied' });
-        return
-      }
-      next();
-    };
+export const authorize = (role: string) => (req: Request, res: Response, next: NextFunction) => {
+  // @ts-ignore
+  if (!(role === req.user.role) && (req.user.role != "admin")) {
+    res.status(403).json({ success: false, message: 'Access denied' });
+    return
+  }
+  next();
+};
+
+
 
