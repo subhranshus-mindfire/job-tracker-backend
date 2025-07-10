@@ -154,7 +154,7 @@ router.put('/:id', protect, authorize('employer'), updateApplication);
  *         schema:
  *           type: string
  *     responses:
- *       200:
+ *       203:
  *         description: Application deleted
  *       401:
  *         description: Unauthorized

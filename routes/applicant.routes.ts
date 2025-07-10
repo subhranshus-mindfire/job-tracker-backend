@@ -141,7 +141,7 @@ router.put("/:id", protect, authorize("applicant"), verifySelf, updateApplicant)
  *         schema:
  *           type: string
  *     responses:
- *       200:
+ *       203:
  *         description: Applicant deleted
  *       401:
  *         description: Unauthorized

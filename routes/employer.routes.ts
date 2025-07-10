@@ -138,7 +138,7 @@ router.put('/:id', protect, authorize('employer'), verifySelf, updateEmployer);
  *         schema:
  *           type: string
  *     responses:
- *       200:
+ *       203:
  *         description: Employer deleted
  *       401:
  *         description: Unauthorized

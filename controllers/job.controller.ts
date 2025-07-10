@@ -65,7 +65,7 @@ export const deleteJob = async (req: Request, res: Response): Promise<void> => {
       return
     }
 
-    res.status(200).json({ success: true, message: 'Job deleted successfully' });
+    res.status(203).json({ success: true, message: 'Job deleted successfully' });
   } catch (err: any) {
     res.status(500).json({ success: false, message: err.message });
   }

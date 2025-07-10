@@ -68,7 +68,7 @@ router.post('/register', register);
  *               password:
  *                 type: string
  *     responses:
- *       200:
+ *       203:
  *         description: Successful login
  *       401:
  *         description: Invalid credentials

@@ -48,7 +48,7 @@ export const deleteApplicant = async (req: Request, res: Response): Promise<void
   try {
     const id = req.params.id
     const deletedApplicant = await Applicant.findByIdAndDelete(id)
-    res.status(200).json({ status: true, data: deletedApplicant })
+    res.status(203).json({ status: true })
   } catch (error: any) {
     res.status(400).json({ status: false, error: error.message })
   }

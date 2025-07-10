@@ -145,7 +145,7 @@ router.put('/:id', protect, verifySelf, updateUser);
  *         schema:
  *           type: string
  *     responses:
- *       200:
+ *       203:
  *         description: User deleted
  *       401:
  *         description: Unauthorized

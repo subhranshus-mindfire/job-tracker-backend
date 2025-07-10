@@ -78,7 +78,7 @@ export const deleteApplication = async (req: Request, res: Response): Promise<vo
       res.status(404).json({ success: false, message: 'Application not found' });
     }
 
-    res.status(200).json({ success: true, message: 'Application deleted successfully', data: deleted });
+    res.status(203).json({ success: true, message: 'Application deleted successfully' });
   } catch (err: any) {
     res.status(500).json({ success: false, message: err.message });
   }

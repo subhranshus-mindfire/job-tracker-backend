@@ -47,7 +47,7 @@ export const deleteUser = async (req: Request, res: Response): Promise<void> => 
   try {
     const id = req?.params?.id
     const deletedUser = await User.findByIdAndDelete(id);
-    res.status(200).json({ success: true, data: deletedUser });
+    res.status(203).json({ success: true });
   } catch (error: any) {
     res.status(400).json({ success: false, message: error.message });
     console.log(error?.message)
