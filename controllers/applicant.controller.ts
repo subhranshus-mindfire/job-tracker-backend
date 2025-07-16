@@ -1,68 +1,39 @@
-import { Applicant } from "../models/Applicant";
+
 import { Request, Response } from "express";
-import { Application } from "../models/Application";
+import { ApplicantRepository } from "../repositories/ApplicantRepository";
 
-export const getApplicants = async (req: Request, res: Response): Promise<void> => {
-  try {
-    const applicants = await Applicant.find()
-    console.log(applicants)
-    res.status(200).json({ status: true, data: applicants })
-  } catch (error: any) {
-    res.status(400).json({ status: false, error: error.message })
-  }
-}
+const applicantRepo = new ApplicantRepository();
 
-export const createApplicant = async (req: Request, res: Response): Promise<void> => {
-  try {
-    const existing = await Applicant.findOne({ user: req?.body?.user });
-    if (existing) {
-      res.status(400).json({ success: false, message: 'Applicant already exists for this user' });
-    }
-    const applicant = await Applicant.create(req.body)
-    res.status(201).json({ status: true, data: applicant })
-  } catch (error: any) {
-    res.status(400).json({ status: false, error: error.message })
-  }
-}
+export const getApplicants = async (_req: Request, res: Response) => {
+  const applicants = await applicantRepo.findAll();
+  res.status(200).json({ success: true, data: applicants });
+};
 
-export const getApplicant = async (req: Request, res: Response): Promise<void> => {
-  try {
-    const id = req.params.id
-    const applicant = await Applicant.find({ _id: id });
-    res.status(200).json({ status: true, data: applicant })
-  } catch (error: any) {
-    res.status(400).json({ status: false, error: error.message })
+export const createApplicant = async (req: Request, res: Response) => {
+  const existing = await applicantRepo.findByUser(req.body.user);
+  if (existing) {
+    return res.status(400).json({ success: false, message: "Applicant already exists" });
   }
-}
+  const applicant = await applicantRepo.create(req.body);
+  res.status(201).json({ success: true, data: applicant });
+};
 
-export const updateApplicant = async (req: Request, res: Response): Promise<void> => {
-  try {
-    const id = req.params.id
-    const updatedApplicant = await Applicant.findByIdAndUpdate(id, req.body, { new: true })
-    res.status(200).json({ status: true, data: updatedApplicant })
-  } catch (error: any) {
-    res.status(400).json({ status: false, error: error.message })
-  }
-}
+export const getApplicant = async (req: Request, res: Response) => {
+  const applicant = await applicantRepo.findById(req.params.id);
+  res.status(200).json({ success: true, data: applicant });
+};
 
-export const deleteApplicant = async (req: Request, res: Response): Promise<void> => {
-  try {
-    const id = req.params.id
-    const deletedApplicant = await Applicant.findByIdAndDelete(id)
-    res.status(203).json({ status: true })
-  } catch (error: any) {
-    res.status(400).json({ status: false, error: error.message })
-  }
-}
+export const updateApplicant = async (req: Request, res: Response) => {
+  const updated = await applicantRepo.updateById(req.params.id, req.body);
+  res.status(200).json({ success: true, data: updated });
+};
+
+export const deleteApplicant = async (req: Request, res: Response) => {
+  await applicantRepo.deleteById(req.params.id);
+  res.status(203).json({ success: true });
+};
 
 export const hasApplied = async (req: Request, res: Response) => {
-  try {
-    const { jobId, applicantId } = req.params;
-
-    const exists = await Application.exists({ job: jobId, applicant: applicantId });
-
-    res.status(200).json({ success: true, data: Boolean(exists) });
-  } catch (err: any) {
-    res.status(500).json({ success: false, message: err.message });
-  }
+  const exists = await applicantRepo.hasApplied(req.params.jobId, req.params.applicantId);
+  res.status(200).json({ success: true, data: Boolean(exists) });
 };

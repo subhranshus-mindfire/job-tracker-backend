@@ -1,3 +1,4 @@
+
 import { Router } from 'express';
 import {
   createApplication,
@@ -5,10 +6,9 @@ import {
   getApplication,
   updateApplication,
   deleteApplication,
-  getApplicationsByApplicant
+  getApplicationsByApplicant,
 } from '../controllers/application.controller';
-import { authorize, protect } from '../middlewares/auth.middleware';
-import { Application } from '../models/Application';
+import { protect, authorize } from '../middlewares/auth.middleware';
 
 const router = Router();
 
@@ -49,9 +49,9 @@ const router = Router();
  *                 example: pending
  *     responses:
  *       201:
- *         description: Application created
+ *         description: Application created successfully
  *       400:
- *         description: Bad request or already applied
+ *         description: Bad request or duplicate
  *       401:
  *         description: Unauthorized
  */
@@ -71,7 +71,7 @@ router.post('/', protect, authorize('applicant'), createApplication);
  *       401:
  *         description: Unauthorized
  *       403:
- *         description: Forbidden - only employer can see all applications
+ *         description: Forbidden
  */
 router.get('/', protect, authorize('employer'), getApplications);
 
@@ -79,7 +79,7 @@ router.get('/', protect, authorize('employer'), getApplications);
  * @swagger
  * /api/applications/{id}:
  *   get:
- *     summary: Get a specific application by ID
+ *     summary: Get application by ID
  *     tags: [Applications]
  *     security:
  *       - bearerAuth: []
@@ -93,12 +93,10 @@ router.get('/', protect, authorize('employer'), getApplications);
  *     responses:
  *       200:
  *         description: Application found
- *       401:
- *         description: Unauthorized
- *       403:
- *         description: Forbidden - only employer can view
  *       404:
  *         description: Not found
+ *       401:
+ *         description: Unauthorized
  */
 router.get('/:id', protect, authorize('employer'), getApplication);
 
@@ -106,7 +104,7 @@ router.get('/:id', protect, authorize('employer'), getApplication);
  * @swagger
  * /api/applications/{id}:
  *   put:
- *     summary: Update an application
+ *     summary: Update an application by ID
  *     tags: [Applications]
  *     security:
  *       - bearerAuth: []
@@ -118,7 +116,7 @@ router.get('/:id', protect, authorize('employer'), getApplication);
  *         schema:
  *           type: string
  *     requestBody:
- *       description: Fields to update
+ *       description: Update fields
  *       required: true
  *       content:
  *         application/json:
@@ -127,16 +125,13 @@ router.get('/:id', protect, authorize('employer'), getApplication);
  *             properties:
  *               status:
  *                 type: string
- *                 example: accepted
  *     responses:
  *       200:
  *         description: Application updated
- *       401:
- *         description: Unauthorized
- *       403:
- *         description: Forbidden - only employer can update
  *       404:
  *         description: Not found
+ *       401:
+ *         description: Unauthorized
  */
 router.put('/:id', protect, authorize('employer'), updateApplication);
 
@@ -144,7 +139,7 @@ router.put('/:id', protect, authorize('employer'), updateApplication);
  * @swagger
  * /api/applications/{id}:
  *   delete:
- *     summary: Delete an application 
+ *     summary: Delete an application by ID
  *     tags: [Applications]
  *     security:
  *       - bearerAuth: []
@@ -157,26 +152,33 @@ router.put('/:id', protect, authorize('employer'), updateApplication);
  *           type: string
  *     responses:
  *       203:
- *         description: Application deleted
+ *         description: Deleted successfully
+ *       404:
+ *         description: Not found
  *       401:
  *         description: Unauthorized
- *       403:
- *         description: Forbidden - only applicant can delete
+ */
+router.delete('/:id', protect, authorize('applicant'), deleteApplication);
+
+/**
+ * @swagger
+ * /api/applications/applicant/{applicantId}:
+ *   get:
+ *     summary: Get all applications by applicant ID
+ *     tags: [Applications]
+ *     parameters:
+ *       - name: applicantId
+ *         in: path
+ *         description: Applicant ID
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: List of applications for the applicant
  *       404:
  *         description: Not found
  */
-router.delete('/:id', protect, deleteApplication);
-
-
-router.patch('/:id', async (req, res) => {
-  const applicationId = req.params.id;
-  const { status } = req.body;
-
-  const updated = await Application.findByIdAndUpdate(applicationId, { status }, { new: true });
-  res.json({ success: true, data: updated });
-});
-
-router.get("/applicant/:applicantId", getApplicationsByApplicant);
-
+router.get('/applicant/:applicantId', protect, authorize('applicant'), getApplicationsByApplicant);
 
 export default router;

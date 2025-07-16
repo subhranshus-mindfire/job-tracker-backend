@@ -155,9 +155,4 @@ router.put("/:id", protect, authorize("applicant"), verifySelf, updateApplicant)
  */
 router.delete("/:id", protect, authorize("applicant"), verifySelf, deleteApplicant);
 
-
-
-
-
-
 export default router

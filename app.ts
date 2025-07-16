@@ -1,6 +1,6 @@
 import express from 'express';
 import dotenv from 'dotenv';
-import cors from 'cors'; // ✅ HERE!
+import cors from 'cors';
 
 import userRoutes from './routes/user.routes';
 import applicantRoutes from './routes/applicant.routes';

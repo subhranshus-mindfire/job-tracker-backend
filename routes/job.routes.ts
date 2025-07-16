@@ -5,16 +5,12 @@ import {
   getJob,
   updateJob,
   deleteJob,
-  getEmployerJobs
+  getEmployerJobs,
+  getJobApplicants
 } from '../controllers/job.controller';
 import { authorize, protect } from '../middlewares/auth.middleware';
-import { Application } from '../models/Application';
 
 const router = Router();
-
-router.get("/my/:empID", protect, authorize('employer'), getEmployerJobs);
-
-
 
 /**
  * @swagger
@@ -22,6 +18,31 @@ router.get("/my/:empID", protect, authorize('employer'), getEmployerJobs);
  *   name: Jobs
  *   description: Manage job postings by employers
  */
+
+/**
+ * @swagger
+ * /api/jobs/my/{empID}:
+ *   get:
+ *     summary: Get jobs posted by a specific employer, including applicants
+ *     tags: [Jobs]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - name: empID
+ *         in: path
+ *         description: Employer ID
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: List of employer's jobs with applicants
+ *       401:
+ *         description: Unauthorized
+ *       403:
+ *         description: Forbidden - only employers can view their jobs
+ */
+router.get("/my/:empID", protect, authorize('employer'), getEmployerJobs);
 
 /**
  * @swagger
@@ -172,15 +193,25 @@ router.put('/:id', protect, authorize('employer'), updateJob);
  */
 router.delete('/:id', protect, authorize('employer'), deleteJob);
 
-router.get('/:id/applicants', async (req, res) => {
-  const jobId = req.params.id;
-  const applications = await Application.find({ job: jobId })
-    .populate({
-      path: "applicant",
-      populate: {
-        path: "user"
-      }
-    }); res.json({ success: true, data: applications });
-});
+/**
+ * @swagger
+ * /api/jobs/{id}/applicants:
+ *   get:
+ *     summary: Get all applicants for a specific job
+ *     tags: [Jobs]
+ *     parameters:
+ *       - name: id
+ *         in: path
+ *         description: Job ID
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: List of applications with applicant details
+ *       404:
+ *         description: Job or applicants not found
+ */
+router.get('/:id/applicants', protect, authorize('employer'), getJobApplicants);
 
 export default router;
