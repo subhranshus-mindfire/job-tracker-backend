@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { createApplicant, deleteApplicant, getApplicant, getApplicants, updateApplicant } from "../controllers/applicant.controller";
+import { createApplicant, deleteApplicant, getApplicant, getApplicants, hasApplied, updateApplicant } from "../controllers/applicant.controller";
 import { authorize, protect, verifySelf } from "../middlewares/auth.middleware";
 
 const router = Router();
@@ -10,6 +10,9 @@ const router = Router();
  *   name: Applicants
  *   description: API endpoints for managing job applicants
  */
+
+
+router.get("/:applicantId/has-applied/:jobId", protect, authorize("applicant"), hasApplied);
 
 /**
  * @swagger
@@ -27,7 +30,7 @@ const router = Router();
  *       403:
  *         description: Forbidden - only admin can view all applicants
  */
-router.get("/", protect, authorize("admin"), getApplicants);
+router.get("/", protect, authorize("employer"), getApplicants);
 
 /**
  * @swagger
@@ -84,7 +87,7 @@ router.post("/", createApplicant);
  *       404:
  *         description: Applicant not found
  */
-router.get("/:id", protect, authorize("employer"), verifySelf, getApplicant);
+router.get("/:id", protect, authorize("employer"), getApplicant);
 
 /**
  * @swagger
@@ -141,7 +144,7 @@ router.put("/:id", protect, authorize("applicant"), verifySelf, updateApplicant)
  *         schema:
  *           type: string
  *     responses:
- *       200:
+ *       203:
  *         description: Applicant deleted
  *       401:
  *         description: Unauthorized
@@ -151,5 +154,10 @@ router.put("/:id", protect, authorize("applicant"), verifySelf, updateApplicant)
  *         description: Applicant not found
  */
 router.delete("/:id", protect, authorize("applicant"), verifySelf, deleteApplicant);
+
+
+
+
+
 
 export default router

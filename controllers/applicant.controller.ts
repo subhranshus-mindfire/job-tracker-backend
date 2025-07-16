@@ -1,5 +1,6 @@
 import { Applicant } from "../models/Applicant";
 import { Request, Response } from "express";
+import { Application } from "../models/Application";
 
 export const getApplicants = async (req: Request, res: Response): Promise<void> => {
   try {
@@ -48,8 +49,20 @@ export const deleteApplicant = async (req: Request, res: Response): Promise<void
   try {
     const id = req.params.id
     const deletedApplicant = await Applicant.findByIdAndDelete(id)
-    res.status(200).json({ status: true, data: deletedApplicant })
+    res.status(203).json({ status: true })
   } catch (error: any) {
     res.status(400).json({ status: false, error: error.message })
   }
 }
+
+export const hasApplied = async (req: Request, res: Response) => {
+  try {
+    const { jobId, applicantId } = req.params;
+
+    const exists = await Application.exists({ job: jobId, applicant: applicantId });
+
+    res.status(200).json({ success: true, data: Boolean(exists) });
+  } catch (err: any) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+};

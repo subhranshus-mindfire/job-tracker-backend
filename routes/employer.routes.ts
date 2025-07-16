@@ -61,7 +61,7 @@ router.post('/', createEmployer);
  *       403:
  *         description: Forbidden - only admin can access
  */
-router.get('/', protect, authorize('admin'), getEmployers);
+router.get('/', getEmployers);
 
 /**
  * @swagger
@@ -138,7 +138,7 @@ router.put('/:id', protect, authorize('employer'), verifySelf, updateEmployer);
  *         schema:
  *           type: string
  *     responses:
- *       200:
+ *       203:
  *         description: Employer deleted
  *       401:
  *         description: Unauthorized

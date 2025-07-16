@@ -71,7 +71,7 @@ export const updateEmployer = async (req: Request, res: Response): Promise<void>
 export const deleteEmployer = async (req: Request, res: Response): Promise<void> => {
   try {
     const deleted = await Employer.findByIdAndDelete(req.params.id);
-    res.status(200).json({ success: true, message: 'Employer deleted successfully', applicant: deleted });
+    res.status(203).json({ success: true, message: 'Employer deleted successfully' });
   } catch (err: any) {
     res.status(500).json({ success: false, message: err.message });
   }

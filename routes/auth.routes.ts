@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import { register, login } from '../controllers/auth.controller';
+import { protect } from '../middlewares/auth.middleware';
 
 const router = Router();
 /**
@@ -68,13 +69,18 @@ router.post('/register', register);
  *               password:
  *                 type: string
  *     responses:
- *       200:
+ *       203:
  *         description: Successful login
  *       401:
  *         description: Invalid credentials
  */
 
 router.post('/login', login);
+
+router.get("/me", protect, (req, res) => {
+  // @ts-ignore
+  res.status(200).json(req.user);
+});
 
 
 

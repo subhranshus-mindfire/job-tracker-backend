@@ -65,7 +65,7 @@ router.post('/', createUser);
  *       403:
  *         description: Forbidden - only admin can get all users
  */
-router.get('/', protect, authorize('admin'), getUsers);
+router.get('/', getUsers);
 
 /**
  * @swagger
@@ -145,7 +145,7 @@ router.put('/:id', protect, verifySelf, updateUser);
  *         schema:
  *           type: string
  *     responses:
- *       200:
+ *       203:
  *         description: User deleted
  *       401:
  *         description: Unauthorized
