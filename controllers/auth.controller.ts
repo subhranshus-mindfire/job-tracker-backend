@@ -1,73 +1,29 @@
-import { Request, Response } from 'express';
-import jwt from 'jsonwebtoken';
-import bcrypt from 'bcryptjs';
-import User from '../models/User';
-import dotenv from 'dotenv';
-import { Applicant } from '../models/Applicant';
-import { Employer } from '../models/Employer';
 
-dotenv.config();
+import { Request, Response } from "express";
+import { AuthService } from "../services/AuthService";
 
-const JWT_SECRET = process.env.JWT_SECRET!;
-const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || '1d';
+const authService = new AuthService();
 
-const generateToken = (userId: string): string => {
-  return jwt.sign({ id: userId }, JWT_SECRET, { expiresIn: JWT_EXPIRES_IN } as jwt.SignOptions);
-};
-
-export const register = async (req: Request, res: Response): Promise<void> => {
+export const register = async (req: Request, res: Response) => {
   try {
-    const { name, email, password, role, phone } = req.body;
-
-    const existing = await User.findOne({ email });
-    if (existing) {
-      res.status(400).json({ success: false, message: 'Email already registered' });
-      return;
-    }
-
-    const hashedPassword = await bcrypt.hash(password, 10);
-    const user = await User.create({ name, email, password: hashedPassword, role, phone });
-
-    if (user._id) {
-      const token = generateToken(user._id.toString());
-      res.status(201).json({ success: true, data: user, token });
-    } else {
-      res.status(500).json({ success: false, message: 'User ID generation failed' });
-    }
+    const result = await authService.register(req.body);
+    res.status(201).json({ success: true, data: result.user, token: result.token });
   } catch (err: any) {
-    res.status(500).json({ success: false, message: err.message });
+    res.status(400).json({ success: false, message: err.message });
   }
 };
 
-export const login = async (req: Request, res: Response): Promise<void> => {
+export const login = async (req: Request, res: Response) => {
   try {
     const { email, password } = req.body;
-    const user = await User.findOne({ email: email });
-
-    if (!user || !(await bcrypt.compare(password, user.password))) {
-      res.status(401).json({ success: false, message: 'Invalid credentials' });
-      return;
-    }
-
-    let role_id: string | null = null
-
-    if (user.role == "applicant") {
-      const applicant = await Applicant.findOne({ user: user._id })
-      if (applicant) role_id = applicant._id as string
-    }
-
-    if (user.role == "employer") {
-      const employer = await Employer.findOne({ user: user._id })
-      if (employer) role_id = employer._id as string
-    }
-
-    if (user._id) {
-      const token = generateToken(user._id.toString());
-      res.status(200).json({ success: true, data: user, token, role_id });
-    } else {
-      res.status(500).json({ success: false, message: 'Failed to generate token' });
-    }
+    const result = await authService.login(email, password);
+    res.status(200).json({
+      success: true,
+      data: result.user,
+      token: result.token,
+      role_id: result.role_id,
+    });
   } catch (err: any) {
-    res.status(500).json({ success: false, message: err.message });
+    res.status(401).json({ success: false, message: err.message });
   }
 };

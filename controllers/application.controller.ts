@@ -1,27 +1,28 @@
-import { Request, Response } from 'express';
-import { Application } from '../models/Application';
+import { Request, Response } from "express";
+import { ApplicationRepository } from "../repositories/ApplicationRepository";
+
+const applicationRepo = new ApplicationRepository();
 
 export const createApplication = async (req: Request, res: Response): Promise<void> => {
   try {
     const { job, applicant, status } = req.body;
-    console.log("Inside Create", applicant)
 
     if (!job || !applicant) {
-      res.status(400).json({ success: false, message: 'job and applicant are required' });
-      return
+      res.status(400).json({ success: false, message: "Job and applicant are required" });
+      return;
     }
 
-    const existing = await Application.findOne({ job, applicant });
+    const existing = await applicationRepo.findByJobAndApplicant(job, applicant);
     if (existing) {
-      res.status(400).json({ success: false, message: 'Already applied for this job' });
-      return
+      res.status(400).json({ success: false, message: "Already applied for this job" });
+      return;
     }
 
-    const application = await Application.create({
+    const application = await applicationRepo.create({
       job,
       applicant,
       status,
-      applied_at: new Date()
+      applied_at: new Date(),
     });
 
     res.status(201).json({ success: true, data: application });
@@ -30,9 +31,9 @@ export const createApplication = async (req: Request, res: Response): Promise<vo
   }
 };
 
-export const getApplications = async (req: Request, res: Response): Promise<void> => {
+export const getApplications = async (_req: Request, res: Response): Promise<void> => {
   try {
-    const applications = await Application.find().populate('job').populate('applicant');
+    const applications = await applicationRepo.findAllWithPopulated();
     res.status(200).json({ success: true, data: applications });
   } catch (err: any) {
     res.status(500).json({ success: false, message: err.message });
@@ -41,11 +42,11 @@ export const getApplications = async (req: Request, res: Response): Promise<void
 
 export const getApplication = async (req: Request, res: Response): Promise<void> => {
   try {
-    const application = await Application.findById(req.params.id).populate('job').populate('applicant');
+    const application = await applicationRepo.findByIdWithPopulated(req.params.id);
 
     if (!application) {
-      res.status(404).json({ success: false, message: 'Application not found' });
-      return
+      res.status(404).json({ success: false, message: "Application not found" });
+      return;
     }
 
     res.status(200).json({ success: true, data: application });
@@ -56,12 +57,11 @@ export const getApplication = async (req: Request, res: Response): Promise<void>
 
 export const updateApplication = async (req: Request, res: Response): Promise<void> => {
   try {
-    const applicationId = req.params.id;
-
-    const updated = await Application.findByIdAndUpdate(applicationId, req.body, { new: true, runValidators: true }).populate('job').populate('applicant');
+    const updated = await applicationRepo.updateByIdWithPopulated(req.params.id, req.body);
 
     if (!updated) {
-      res.status(404).json({ success: false, message: 'Application not found' });
+      res.status(404).json({ success: false, message: "Application not found" });
+      return;
     }
 
     res.status(200).json({ success: true, data: updated });
@@ -70,41 +70,28 @@ export const updateApplication = async (req: Request, res: Response): Promise<vo
   }
 };
 
-
 export const deleteApplication = async (req: Request, res: Response): Promise<void> => {
   try {
-    const deleted = await Application.findByIdAndDelete(req.params.id);
+    const deleted = await applicationRepo.deleteById(req.params.id);
 
     if (!deleted) {
-      res.status(404).json({ success: false, message: 'Application not found' });
+      res.status(404).json({ success: false, message: "Application not found" });
+      return;
     }
 
-    res.status(203).json({ success: true, message: 'Application deleted successfully' });
+    res.status(203).json({ success: true, message: "Application deleted successfully" });
   } catch (err: any) {
     res.status(500).json({ success: false, message: err.message });
   }
 };
 
-
-export const getApplicationsByApplicant = async (req: Request, res: Response) => {
+export const getApplicationsByApplicant = async (req: Request, res: Response): Promise<void> => {
   try {
     const { applicantId } = req.params;
-
-    const applications = await Application.find({ applicant: applicantId })
-      .populate({
-        path: "job",
-        populate: {
-          path: "employer",
-          populate: {
-            path: "user"
-          }
-        }
-      });
+    const applications = await applicationRepo.findByApplicantId(applicantId);
 
     res.status(200).json({ success: true, data: applications });
   } catch (err: any) {
     res.status(500).json({ success: false, message: err.message });
   }
 };
-
-
