@@ -61,7 +61,7 @@ router.post('/', createEmployer);
  *       403:
  *         description: Forbidden - only admin can access
  */
-router.get('/', protect, authorize('admin'), getEmployers);
+router.get('/', getEmployers);
 
 /**
  * @swagger

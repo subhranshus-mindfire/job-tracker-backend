@@ -4,9 +4,11 @@ import {
   getApplications,
   getApplication,
   updateApplication,
-  deleteApplication
+  deleteApplication,
+  getApplicationsByApplicant
 } from '../controllers/application.controller';
 import { authorize, protect } from '../middlewares/auth.middleware';
+import { Application } from '../models/Application';
 
 const router = Router();
 
@@ -163,6 +165,18 @@ router.put('/:id', protect, authorize('employer'), updateApplication);
  *       404:
  *         description: Not found
  */
-router.delete('/:id', protect, authorize('applicant'), deleteApplication);
+router.delete('/:id', protect, deleteApplication);
+
+
+router.patch('/:id', async (req, res) => {
+  const applicationId = req.params.id;
+  const { status } = req.body;
+
+  const updated = await Application.findByIdAndUpdate(applicationId, { status }, { new: true });
+  res.json({ success: true, data: updated });
+});
+
+router.get("/applicant/:applicantId", getApplicationsByApplicant);
+
 
 export default router;

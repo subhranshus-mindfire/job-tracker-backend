@@ -65,7 +65,7 @@ router.post('/', createUser);
  *       403:
  *         description: Forbidden - only admin can get all users
  */
-router.get('/', protect, authorize('admin'), getUsers);
+router.get('/', getUsers);
 
 /**
  * @swagger

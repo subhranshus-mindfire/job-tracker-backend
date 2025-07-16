@@ -4,11 +4,16 @@ import {
   getJobs,
   getJob,
   updateJob,
-  deleteJob
+  deleteJob,
+  getEmployerJobs
 } from '../controllers/job.controller';
 import { authorize, protect } from '../middlewares/auth.middleware';
+import { Application } from '../models/Application';
 
 const router = Router();
+
+router.get("/my/:empID", protect, authorize('employer'), getEmployerJobs);
+
 
 
 /**
@@ -166,5 +171,16 @@ router.put('/:id', protect, authorize('employer'), updateJob);
  *         description: Not found
  */
 router.delete('/:id', protect, authorize('employer'), deleteJob);
+
+router.get('/:id/applicants', async (req, res) => {
+  const jobId = req.params.id;
+  const applications = await Application.find({ job: jobId })
+    .populate({
+      path: "applicant",
+      populate: {
+        path: "user"
+      }
+    }); res.json({ success: true, data: applications });
+});
 
 export default router;

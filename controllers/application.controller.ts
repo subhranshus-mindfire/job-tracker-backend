@@ -4,6 +4,7 @@ import { Application } from '../models/Application';
 export const createApplication = async (req: Request, res: Response): Promise<void> => {
   try {
     const { job, applicant, status } = req.body;
+    console.log("Inside Create", applicant)
 
     if (!job || !applicant) {
       res.status(400).json({ success: false, message: 'job and applicant are required' });
@@ -83,4 +84,27 @@ export const deleteApplication = async (req: Request, res: Response): Promise<vo
     res.status(500).json({ success: false, message: err.message });
   }
 };
+
+
+export const getApplicationsByApplicant = async (req: Request, res: Response) => {
+  try {
+    const { applicantId } = req.params;
+
+    const applications = await Application.find({ applicant: applicantId })
+      .populate({
+        path: "job",
+        populate: {
+          path: "employer",
+          populate: {
+            path: "user"
+          }
+        }
+      });
+
+    res.status(200).json({ success: true, data: applications });
+  } catch (err: any) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+};
+
 

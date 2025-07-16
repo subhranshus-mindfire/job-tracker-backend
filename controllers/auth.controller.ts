@@ -3,6 +3,8 @@ import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
 import User from '../models/User';
 import dotenv from 'dotenv';
+import { Applicant } from '../models/Applicant';
+import { Employer } from '../models/Employer';
 
 dotenv.config();
 
@@ -40,16 +42,28 @@ export const register = async (req: Request, res: Response): Promise<void> => {
 export const login = async (req: Request, res: Response): Promise<void> => {
   try {
     const { email, password } = req.body;
+    const user = await User.findOne({ email: email });
 
-    const user = await User.findOne({ email });
     if (!user || !(await bcrypt.compare(password, user.password))) {
       res.status(401).json({ success: false, message: 'Invalid credentials' });
       return;
     }
 
+    let role_id: string | null = null
+
+    if (user.role == "applicant") {
+      const applicant = await Applicant.findOne({ user: user._id })
+      if (applicant) role_id = applicant._id as string
+    }
+
+    if (user.role == "employer") {
+      const employer = await Employer.findOne({ user: user._id })
+      if (employer) role_id = employer._id as string
+    }
+
     if (user._id) {
       const token = generateToken(user._id.toString());
-      res.status(200).json({ success: true, data: user, token });
+      res.status(200).json({ success: true, data: user, token, role_id });
     } else {
       res.status(500).json({ success: false, message: 'Failed to generate token' });
     }

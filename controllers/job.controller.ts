@@ -1,6 +1,8 @@
 import { Request, Response } from 'express';
 import { Job } from '../models/Job';
 import { Employer } from '../models/Employer';
+import { Application } from "../models/Application";
+
 
 export const createJob = async (req: Request, res: Response): Promise<void> => {
   try {
@@ -19,12 +21,20 @@ export const createJob = async (req: Request, res: Response): Promise<void> => {
 
 export const getJobs = async (_req: Request, res: Response): Promise<void> => {
   try {
-    const jobs = await Job.find().populate('employer');
+    const jobs = await Job.find()
+      .populate({
+        path: 'employer',
+        populate: {
+          path: 'user',
+        },
+      });
+
     res.status(200).json({ success: true, data: jobs });
   } catch (err: any) {
     res.status(500).json({ success: false, message: err.message });
   }
 };
+
 
 export const getJob = async (req: Request, res: Response): Promise<void> => {
   try {
@@ -70,3 +80,33 @@ export const deleteJob = async (req: Request, res: Response): Promise<void> => {
     res.status(500).json({ success: false, message: err.message });
   }
 };
+
+
+export const getEmployerJobs = async (req: Request, res: Response): Promise<void> => {
+  try {
+
+    const employerId = req.params.empID
+    console.log(employerId)
+
+    const jobs = await Job.find({ employer: employerId }).populate({
+      path: "employer",
+      populate: { path: "user" },
+    });
+
+    const jobsWithApplicants = await Promise.all(
+      jobs.map(async (job) => {
+        const applicants = await Application.find({ job: job._id });
+        return {
+          ...job.toObject(),
+          applicants,
+        };
+      })
+    );
+
+    res.status(200).json({ success: true, data: jobsWithApplicants });
+  } catch (err: any) {
+    console.error(err);
+    res.status(500).json({ success: false, message: err.message });
+  }
+};
+
