@@ -95,3 +95,21 @@ export const getApplicationsByApplicant = async (req: Request, res: Response): P
     res.status(500).json({ success: false, message: err.message });
   }
 };
+
+export const updateApplicationStatus = async (req: Request, res: Response) => {
+  try {
+    const applicationId = req.params.id;
+    const { status } = req.body;
+
+    const updated = applicationRepo.findByIdUpdate(applicationId,status)
+
+    if (!updated) {
+      return res.status(404).json({ success: false, message: 'Application not found' });
+    }
+
+    res.json({ success: true, data: updated });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+};
