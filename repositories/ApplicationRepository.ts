@@ -43,4 +43,8 @@ export class ApplicationRepository extends BaseRepository<any> {
       populate: { path: "user" },
     });
   }
+
+  async findByIdUpdate(applicationId: string, status: string) {
+    return await Application.findByIdAndUpdate(applicationId, { status }, { new: true });
+  }
 }

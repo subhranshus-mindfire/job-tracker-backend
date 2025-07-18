@@ -7,6 +7,7 @@ import {
   updateApplication,
   deleteApplication,
   getApplicationsByApplicant,
+  updateApplicationStatus,
 } from '../controllers/application.controller';
 import { protect, authorize } from '../middlewares/auth.middleware';
 
@@ -180,5 +181,27 @@ router.delete('/:id', protect, authorize('applicant'), deleteApplication);
  *         description: Not found
  */
 router.get('/applicant/:applicantId', protect, authorize('applicant'), getApplicationsByApplicant);
+
+
+/**
+ * @swagger
+ * /api/applications/{applicationId}:
+ *   patch:
+ *     summary: Update application status by ID
+ *     tags: [Applications]
+ *     parameters:
+ *       - name: applicationId
+ *         in: path
+ *         description: Application ID
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Application status updated
+ *       404:
+ *         description: Not found
+ */
+router.patch('/:id', protect, updateApplicationStatus);
 
 export default router;
