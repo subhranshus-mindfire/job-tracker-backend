@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { register, login } from '../controllers/auth.controller';
+import { register, login, logout } from '../controllers/auth.controller';
 import { protect } from '../middlewares/auth.middleware';
 
 const router = Router();
@@ -81,6 +81,8 @@ router.get("/me", protect, (req, res) => {
   // @ts-ignore
   res.status(200).json(req.user);
 });
+
+router.post("/logout", logout);
 
 
 
