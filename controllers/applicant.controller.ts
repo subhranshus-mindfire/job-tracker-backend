@@ -12,7 +12,8 @@ export const getApplicants = async (_req: Request, res: Response) => {
 export const createApplicant = async (req: Request, res: Response) => {
   const existing = await applicantRepo.findByUser(req.body.user);
   if (existing) {
-    return res.status(400).json({ success: false, message: "Applicant already exists" });
+     res.status(400).json({ success: false, message: "Applicant already exists" });
+     return
   }
   const applicant = await applicantRepo.create(req.body);
   res.status(201).json({ success: true, data: applicant });

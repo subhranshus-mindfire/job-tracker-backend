@@ -5,8 +5,8 @@ services:
     build: .
     container_name: job_portal_backend
     restart: always
-    expose:
-      - "3000"
+    ports:
+      - "5000:5000"
     environment:
       - MONGO_URL=mongodb://mongo:27017/job_portal
     depends_on:

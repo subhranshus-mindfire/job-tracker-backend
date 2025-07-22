@@ -104,7 +104,8 @@ export const updateApplicationStatus = async (req: Request, res: Response) => {
     const updated = applicationRepo.findByIdUpdate(applicationId,status)
 
     if (!updated) {
-      return res.status(404).json({ success: false, message: 'Application not found' });
+       res.status(404).json({ success: false, message: 'Application not found' });
+       return
     }
 
     res.json({ success: true, data: updated });

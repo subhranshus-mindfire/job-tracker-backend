@@ -12,17 +12,20 @@ import authRoutes from "./routes/auth.routes";
 import { swaggerOptions } from './swagger';
 import swaggerUi from 'swagger-ui-express';
 import swaggerJSDoc from 'swagger-jsdoc';
+import cookieParser from 'cookie-parser';
 
 dotenv.config();
 
 const app = express();
 
 app.use(cors({
-  origin: ["http://localhost:5173", "http://localhost:3000"],
+  origin: ["http://localhost:5173", "http://localhost:3000","http://10.116.23.114:3000","https://qnmbp0ml-3000.inc1.devtunnels.ms"],
   credentials: true
 }));
 
 app.use(express.json());
+app.use(cookieParser());
+
 
 const swaggerSpec = swaggerJSDoc(swaggerOptions);
 app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
