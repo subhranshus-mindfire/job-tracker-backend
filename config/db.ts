@@ -2,7 +2,8 @@ import mongoose from 'mongoose';
 
 export const connectDB = async (): Promise<void> => {
   try {
-    const mongoURL = process.env.MONGO_URL || 'mongodb://localhost:27017/job_portal';
+    const mongoURL = process.env.MONGO_URL || `mongodb+srv://subhranshumfs:${process.env.DB_PASSWORD}@cluster0.jebf9ua.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0
+l`;
     console.log(`Connecting to MongoDB: ${mongoURL}`);
 
     await mongoose.connect(mongoURL);
