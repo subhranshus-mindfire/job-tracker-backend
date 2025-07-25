@@ -19,7 +19,7 @@ dotenv.config();
 const app = express();
 
 app.use(cors({
-  origin: ["http://localhost:5173", "http://localhost:3000","http://10.116.23.114:3000","https://qnmbp0ml-3000.inc1.devtunnels.ms"],
+  origin: ["http://localhost:5173", "http://localhost:3000","https://job-portal-nextjs-pdt3.vercel.app/"],
   credentials: true
 }));
 
